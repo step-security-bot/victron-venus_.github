@@ -26,7 +26,7 @@ flowchart TB
         PV["dbus-tasmota-pv"]
         EMP["dbus-emporia-vue"]
         GRD["dbus-esphome-grid-sensor"]
-        EV["dbus-evcharger / dbus-ev"]
+        EV["dbus-ev (vehicle / optional charger)"]
         PMP["dbus-pump"]
         IC["inverter-control"]
         EL["dbus-event-log (optional)"]
@@ -51,7 +51,7 @@ flowchart TB
     style OBS fill:#8e44ad,color:#fff
 ```
 
-Audited protocols: ESP/BMS → MQTT → `dbus-mqtt-battery`; Tasmota MQTT → `dbus-tasmota-pv`; Home Assistant → `dbus-ev`, `dbus-evcharger`, `dbus-pump` and `dbus-emporia-vue`. These packages publish D-Bus values consumed by the controller and native Venus services. `venus-os-observability` reads D-Bus for metrics. This is a repository map: the optional event-log and ESPHome grid bridge were not installed on the audited GX, and the archived governance project does not mediate its controller writes.
+Audited protocols: ESP/BMS → MQTT → `dbus-mqtt-battery`; Tasmota MQTT → `dbus-tasmota-pv`; Mercedes or Home Assistant → `dbus-ev`; Home Assistant → `dbus-pump` and `dbus-emporia-vue`. The optional integrated Mercedes charger belongs to `dbus-ev`; the standalone `dbus-evcharger` is archived. Follow the [EV migration guide](https://github.com/victron-venus/dbus-ev/blob/main/docs/mercedes-migration.md) before replacing an existing charger owner. These packages publish D-Bus values consumed by the controller and native Venus services. `venus-os-observability` reads D-Bus for metrics. This is a repository map: the optional event-log and ESPHome grid bridge were not installed on the audited GX, and the archived governance project does not mediate its controller writes.
 
 ### Thermostat integration on Venus OS
 
@@ -119,6 +119,18 @@ flowchart TB
     style DT fill:#24c8db,color:#000
     style IC fill:#4ecdc4,color:#000
 ```
+
+### Read-only voice and display reports
+
+[inverter-gateway](https://github.com/victron-venus/inverter-gateway) owns the
+`/v1/energy` source selection, units, freshness and report wording.
+[amazon-echo-home-voice](https://github.com/4alvit/amazon-echo-home-voice) presents
+those reports through an Alexa custom skill;
+[google-home-voice-stats](https://github.com/4alvit/google-home-voice-stats)
+presents them as Cast video and speech, with optional Home Assistant/Matter
+voice triggers. These adapters run on a companion host and use scoped read-only
+gateway access. Registering a voice entry point and testing a physical device
+remain separate from installing source or a container.
 
 ## 3. Data & docs (optional)
 
